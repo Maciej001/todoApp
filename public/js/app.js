@@ -20,9 +20,14 @@
           return _this.destroy(e.target);
         };
       })(this));
-      return this.$todoList.on('change', '.toggle', (function(_this) {
+      this.$todoList.on('change', '.toggle', (function(_this) {
         return function(e) {
           return _this.toggle(e.target);
+        };
+      })(this));
+      return this.$clear.on('click', (function(_this) {
+        return function(e) {
+          return _this.clearCompleted(e);
         };
       })(this));
     };
@@ -30,7 +35,7 @@
     TodoApp.prototype.cacheElements = function() {
       this.$input = $('#new-todo');
       this.$todoList = $('#todo-list');
-      return this.clear = $('#clear-completed');
+      return this.$clear = $('#clear-completed');
     };
 
     TodoApp.prototype.displayItems = function() {
@@ -53,6 +58,24 @@
 
     TodoApp.prototype.clearItems = function() {
       return this.$todoList.empty();
+    };
+
+    TodoApp.prototype.clearCompleted = function(e) {
+      var id, item, stored_item, _i, _len, _ref;
+      _ref = this.$todoList.children();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        id = $(item).data('id');
+        console.log(id);
+        stored_item = localStorage.getObj(id);
+        if (stored_item.completed === true) {
+          $(item).slideUp("slow", function() {
+            return $(item).remove();
+          });
+          localStorage.removeItem(id);
+        }
+      }
+      return this.displayItems();
     };
 
     TodoApp.prototype.toggle = function(elem) {

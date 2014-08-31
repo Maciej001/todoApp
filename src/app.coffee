@@ -7,13 +7,14 @@ class TodoApp
 		@$input.on('keyup', (e) => @create(e))
 		@$todoList.on('click', '.destroy', (e) => @destroy(e.target))
 		@$todoList.on('change', '.toggle', (e) => @toggle(e.target))
+		@$clear.on('click', (e) => @clearCompleted(e))
 
 	cacheElements: ->
-		# we could just use $input - but it would be greated everytime you add an item
+		# we could just use $input - but it would be created everytime you add an item
 		# it's better sometimes to cash it as the class variable
 		@$input = $('#new-todo')
 		@$todoList = $('#todo-list')
-		@clear = $('#clear-completed')
+		@$clear = $('#clear-completed')
 
 	displayItems: ->
 		@clearItems()
@@ -30,9 +31,22 @@ class TodoApp
 			</li>
 		"""
 		@$todoList.append(html)
+
 	clearItems: ->
 		# .empty romoves all the elements
 		@$todoList.empty()
+
+	clearCompleted: (e) ->
+		for item in @$todoList.children()
+			id = $(item).data('id')
+			console.log id
+			stored_item = localStorage.getObj(id)
+			if stored_item.completed is on
+				$(item).slideUp("slow", -> $(item).remove())
+				localStorage.removeItem(id)
+
+		@displayItems()
+			
 
 	toggle: (elem) ->
 		# retrieve id from data-id field of li element
